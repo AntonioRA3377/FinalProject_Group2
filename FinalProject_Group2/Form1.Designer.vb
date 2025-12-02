@@ -27,7 +27,6 @@ Partial Class Form1
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.txtTitle = New System.Windows.Forms.TextBox()
         Me.txtAuthor = New System.Windows.Forms.TextBox()
-        Me.txtCategory = New System.Windows.Forms.TextBox()
         Me.txtAvailability = New System.Windows.Forms.TextBox()
         Me.btnAdd = New System.Windows.Forms.Button()
         Me.btnDelete = New System.Windows.Forms.Button()
@@ -35,6 +34,7 @@ Partial Class Form1
         Me.btnClear = New System.Windows.Forms.Button()
         Me.btnUpdate = New System.Windows.Forms.Button()
         Me.dgvBooks = New System.Windows.Forms.DataGridView()
+        Me.cmbCategory = New System.Windows.Forms.ComboBox()
         CType(Me.dgvBooks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -66,14 +66,6 @@ Partial Class Form1
         Me.txtAuthor.Size = New System.Drawing.Size(175, 20)
         Me.txtAuthor.TabIndex = 3
         Me.txtAuthor.Text = "Author:"
-        '
-        'txtCategory
-        '
-        Me.txtCategory.Location = New System.Drawing.Point(45, 174)
-        Me.txtCategory.Name = "txtCategory"
-        Me.txtCategory.Size = New System.Drawing.Size(175, 20)
-        Me.txtCategory.TabIndex = 4
-        Me.txtCategory.Text = "Category: "
         '
         'txtAvailability
         '
@@ -136,12 +128,21 @@ Partial Class Form1
         Me.dgvBooks.Size = New System.Drawing.Size(561, 234)
         Me.dgvBooks.TabIndex = 11
         '
+        'cmbCategory
+        '
+        Me.cmbCategory.FormattingEnabled = True
+        Me.cmbCategory.Location = New System.Drawing.Point(45, 170)
+        Me.cmbCategory.Name = "cmbCategory"
+        Me.cmbCategory.Size = New System.Drawing.Size(176, 21)
+        Me.cmbCategory.TabIndex = 12
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.MenuBar
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.cmbCategory)
         Me.Controls.Add(Me.dgvBooks)
         Me.Controls.Add(Me.btnUpdate)
         Me.Controls.Add(Me.btnClear)
@@ -149,7 +150,6 @@ Partial Class Form1
         Me.Controls.Add(Me.btnDelete)
         Me.Controls.Add(Me.btnAdd)
         Me.Controls.Add(Me.txtAvailability)
-        Me.Controls.Add(Me.txtCategory)
         Me.Controls.Add(Me.txtAuthor)
         Me.Controls.Add(Me.txtTitle)
         Me.Controls.Add(Me.txtID)
@@ -165,7 +165,6 @@ Partial Class Form1
     Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
     Friend WithEvents txtTitle As TextBox
     Friend WithEvents txtAuthor As TextBox
-    Friend WithEvents txtCategory As TextBox
     Friend WithEvents txtAvailability As TextBox
     Friend WithEvents btnAdd As Button
     Friend WithEvents btnDelete As Button
@@ -173,4 +172,5 @@ Partial Class Form1
     Friend WithEvents btnClear As Button
     Friend WithEvents btnUpdate As Button
     Friend WithEvents dgvBooks As DataGridView
+    Friend WithEvents cmbCategory As ComboBox
 End Class
