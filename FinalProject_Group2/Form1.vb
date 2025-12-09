@@ -3,10 +3,7 @@ Imports System.Data
 
 Public Class Form1
 
-
-    Dim connectionString As String =
-    "Server=localhost;Port=3306;Database=library_db;Uid=libraryuser;Pwd=library123;SslMode=Disabled;"
-
+    Dim connectionString As String = "Server=localhost;Port=3306;Database=library_db;Uid=libraryuser;Pwd=library123;SslMode=None;"
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         cmbCategory.Items.AddRange({"Fiction", "Non-Fiction", "Science", "History", "Children", "Education", "Novel", "Comics"})
@@ -50,26 +47,40 @@ Public Class Form1
         txtAvailability.Clear()
     End Sub
 
-    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        If txtID.Text = "" Or txtTitle.Text = "" Then
-            MessageBox.Show("ID and Title are required.")
-            Return
+    Private Function ValidateFields() As Boolean
+        If txtTitle.Text.Trim() = "" Then
+            MessageBox.Show("Title is required.")
+            Return False
         End If
+        If txtAuthor.Text.Trim() = "" Then
+            MessageBox.Show("Author is required.")
+            Return False
+        End If
+        If cmbCategory.Text.Trim() = "" Then
+            MessageBox.Show("Category is required.")
+            Return False
+        End If
+        If txtAvailability.Text.Trim() = "" Then
+            MessageBox.Show("Availability is required.")
+            Return False
+        End If
+        Return True
+    End Function
 
+    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
+        If Not ValidateFields() Then Return
         Try
             Using conn As New MySqlConnection(connectionString)
                 conn.Open()
-                Dim sql As String = "INSERT INTO books (id, title, author, category, availability) VALUES (@id,@title,@author,@cat,@avail)"
+                Dim sql As String = "INSERT INTO books (title, author, category, availability) VALUES (@title,@author,@cat,@avail)"
                 Using cmd As New MySqlCommand(sql, conn)
-                    cmd.Parameters.AddWithValue("@id", Integer.Parse(txtID.Text))
-                    cmd.Parameters.AddWithValue("@title", txtTitle.Text)
-                    cmd.Parameters.AddWithValue("@author", txtAuthor.Text)
-                    cmd.Parameters.AddWithValue("@cat", cmbCategory.Text)
-                    cmd.Parameters.AddWithValue("@avail", txtAvailability.Text)
+                    cmd.Parameters.AddWithValue("@title", txtTitle.Text.Trim())
+                    cmd.Parameters.AddWithValue("@author", txtAuthor.Text.Trim())
+                    cmd.Parameters.AddWithValue("@cat", cmbCategory.Text.Trim())
+                    cmd.Parameters.AddWithValue("@avail", txtAvailability.Text.Trim())
                     cmd.ExecuteNonQuery()
                 End Using
             End Using
-
             LoadData()
             ClearFields()
             MessageBox.Show("Book added successfully.")
@@ -81,17 +92,21 @@ Public Class Form1
     End Sub
 
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
+        If txtID.Text.Trim() = "" Then
+            MessageBox.Show("Select a book to update.")
+            Return
+        End If
+        If Not ValidateFields() Then Return
         Try
             Using conn As New MySqlConnection(connectionString)
                 conn.Open()
                 Dim sql As String = "UPDATE books SET title=@title, author=@author, category=@cat, availability=@avail WHERE id=@id AND is_deleted=0"
                 Using cmd As New MySqlCommand(sql, conn)
-                    cmd.Parameters.AddWithValue("@title", txtTitle.Text)
-                    cmd.Parameters.AddWithValue("@author", txtAuthor.Text)
-                    cmd.Parameters.AddWithValue("@cat", cmbCategory.Text)
-                    cmd.Parameters.AddWithValue("@avail", txtAvailability.Text)
+                    cmd.Parameters.AddWithValue("@title", txtTitle.Text.Trim())
+                    cmd.Parameters.AddWithValue("@author", txtAuthor.Text.Trim())
+                    cmd.Parameters.AddWithValue("@cat", cmbCategory.Text.Trim())
+                    cmd.Parameters.AddWithValue("@avail", txtAvailability.Text.Trim())
                     cmd.Parameters.AddWithValue("@id", Integer.Parse(txtID.Text))
-
                     Dim rows = cmd.ExecuteNonQuery()
                     If rows = 0 Then
                         MessageBox.Show("Record not found.")
@@ -100,7 +115,6 @@ Public Class Form1
                     End If
                 End Using
             End Using
-
             LoadData()
             ClearFields()
         Catch ex As MySqlException
@@ -111,11 +125,10 @@ Public Class Form1
     End Sub
 
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
-        If txtID.Text = "" Then
-            MessageBox.Show("Enter ID to delete.")
+        If txtID.Text.Trim() = "" Then
+            MessageBox.Show("Select a book to delete.")
             Return
         End If
-
         Try
             Using conn As New MySqlConnection(connectionString)
                 conn.Open()
@@ -130,7 +143,6 @@ Public Class Form1
                     End If
                 End Using
             End Using
-
             LoadData()
             ClearFields()
         Catch ex As MySqlException
@@ -142,11 +154,12 @@ Public Class Form1
 
     Private Sub dgvBooks_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvBooks.CellClick
         If e.RowIndex < 0 Then Return
-        txtID.Text = dgvBooks.Rows(e.RowIndex).Cells(0).Value.ToString()
-        txtTitle.Text = dgvBooks.Rows(e.RowIndex).Cells(1).Value.ToString()
-        txtAuthor.Text = dgvBooks.Rows(e.RowIndex).Cells(2).Value.ToString()
-        cmbCategory.Text = dgvBooks.Rows(e.RowIndex).Cells(3).Value.ToString()
-        txtAvailability.Text = dgvBooks.Rows(e.RowIndex).Cells(4).Value.ToString()
+        Dim row = dgvBooks.Rows(e.RowIndex)
+        txtID.Text = row.Cells("id").Value.ToString()
+        txtTitle.Text = row.Cells("title").Value.ToString()
+        txtAuthor.Text = row.Cells("author").Value.ToString()
+        cmbCategory.Text = row.Cells("category").Value.ToString()
+        txtAvailability.Text = row.Cells("availability").Value.ToString()
     End Sub
 
     Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
