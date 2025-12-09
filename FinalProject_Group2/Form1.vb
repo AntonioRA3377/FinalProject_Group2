@@ -3,13 +3,26 @@ Imports System.Data
 
 Public Class Form1
 
-    Dim connectionString As String = "server=localhost;userid=libraryuser;password=library123;database=library_db"
 
+    Dim connectionString As String =
+    "Server=localhost;Port=3306;Database=library_db;Uid=libraryuser;Pwd=library123;SslMode=Disabled;"
 
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         cmbCategory.Items.AddRange({"Fiction", "Non-Fiction", "Science", "History", "Children", "Education", "Novel", "Comics"})
+        TestConnection()
         LoadData()
+    End Sub
+
+    Private Sub TestConnection()
+        Try
+            Using conn As New MySqlConnection(connectionString)
+                conn.Open()
+                MessageBox.Show("Connected to MySQL successfully.")
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("MySQL Connection FAILED: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub LoadData()
@@ -54,11 +67,12 @@ Public Class Form1
                     cmd.Parameters.AddWithValue("@cat", cmbCategory.Text)
                     cmd.Parameters.AddWithValue("@avail", txtAvailability.Text)
                     cmd.ExecuteNonQuery()
-                    LoadData()
-                    ClearFields()
-                    MessageBox.Show("Book added successfully.")
                 End Using
             End Using
+
+            LoadData()
+            ClearFields()
+            MessageBox.Show("Book added successfully.")
         Catch ex As MySqlException
             MessageBox.Show("Database error: " & ex.Message)
         Catch ex As Exception
@@ -77,16 +91,18 @@ Public Class Form1
                     cmd.Parameters.AddWithValue("@cat", cmbCategory.Text)
                     cmd.Parameters.AddWithValue("@avail", txtAvailability.Text)
                     cmd.Parameters.AddWithValue("@id", Integer.Parse(txtID.Text))
+
                     Dim rows = cmd.ExecuteNonQuery()
                     If rows = 0 Then
                         MessageBox.Show("Record not found.")
                     Else
                         MessageBox.Show("Book updated successfully.")
                     End If
-                    LoadData()
-                    ClearFields()
                 End Using
             End Using
+
+            LoadData()
+            ClearFields()
         Catch ex As MySqlException
             MessageBox.Show("Database error: " & ex.Message)
         Catch ex As Exception
@@ -112,10 +128,11 @@ Public Class Form1
                     Else
                         MessageBox.Show("Book deleted successfully.")
                     End If
-                    LoadData()
-                    ClearFields()
                 End Using
             End Using
+
+            LoadData()
+            ClearFields()
         Catch ex As MySqlException
             MessageBox.Show("Database error: " & ex.Message)
         Catch ex As Exception
